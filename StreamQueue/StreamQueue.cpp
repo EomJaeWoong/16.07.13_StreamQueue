@@ -68,10 +68,15 @@ int	CAyaStreamSQ::GetUseSize(void)
 /////////////////////////////////////////////////////////////////////////
 int	CAyaStreamSQ::GetFreeSize(void)
 {
-	if (m_iReadPos >= m_iWritePos)
-		return m_iReadPos - m_iWritePos - 1;
+	if (m_iReadPos != m_iWritePos){
+		if (m_iReadPos >= m_iWritePos)
+			return m_iReadPos - m_iWritePos - 1;
+		else
+			return GetBufferSize() - m_iWritePos + m_iReadPos - 1;
+	}
+
 	else
-		return GetBufferSize() - m_iWritePos + m_iReadPos - 1;
+		return GetBufferSize() - 1;
 }
 
 /////////////////////////////////////////////////////////////////////////
@@ -105,8 +110,19 @@ int	CAyaStreamSQ::GetNotBrokenPutSize(void)
 /////////////////////////////////////////////////////////////////////////
 int	CAyaStreamSQ::Put(char *chpData, int iSize)
 {
+	if (GetFreeSize() < iSize)
+		iSize = GetFreeSize();
+	if (m_iWritePos < m_iReadPos)
+		iSize = GetNotBrokenPutSize();
 
- }
+	for (int iCnt = 0; iCnt < iSize; iCnt++)
+	{
+		m_chpBuffer[m_iWritePos++] = chpData[iCnt];
+		if (m_iWritePos >= m_iBufferSize)	m_iWritePos = 0;
+	}
+	
+	return iSize;
+}
 
 /////////////////////////////////////////////////////////////////////////
 // ReadPos 에서 데이타 가져옴. ReadPos 이동.
@@ -116,7 +132,18 @@ int	CAyaStreamSQ::Put(char *chpData, int iSize)
 /////////////////////////////////////////////////////////////////////////
 int	CAyaStreamSQ::Get(char *chpDest, int iSize)
 {
+	if (GetUseSize() < iSize)
+		iSize = GetUseSize();
+	if (m_iWritePos < m_iReadPos)
+		iSize = GetNotBrokenGetSize();
 
+	for (int iCnt = 0; iCnt < iSize; iCnt++)
+	{
+		chpDest[iCnt] = m_chpBuffer[m_iReadPos++];
+		if (m_iReadPos >= m_iBufferSize)	m_iReadPos = 0;
+	}
+	
+	return iSize;
 }
 
 /////////////////////////////////////////////////////////////////////////
@@ -127,7 +154,18 @@ int	CAyaStreamSQ::Get(char *chpDest, int iSize)
 /////////////////////////////////////////////////////////////////////////
 int	CAyaStreamSQ::Peek(char *chpDest, int iSize)
 {
+	int iBrokenSize;
 
+	if (GetFreeSize() < iSize)
+		iSize = GetFreeSize();
+
+	iBrokenSize = GetNotBrokenGetSize();
+	for (int iCnt = 0; iCnt < iBrokenSize; iCnt++)
+	{
+		chpDest[iCnt] = m_chpBuffer[m_iReadPos + iCnt];
+	}
+
+	return iBrokenSize;
 }
 
 
@@ -142,7 +180,10 @@ int	CAyaStreamSQ::Peek(char *chpDest, int iSize)
 /////////////////////////////////////////////////////////////////////////
 void CAyaStreamSQ::RemoveData(int iSize)
 {
-
+	if (GetUseSize() < iSize)
+		return;
+	else
+		m_iReadPos += iSize;
 }
 
 /////////////////////////////////////////////////////////////////////////
@@ -153,7 +194,12 @@ void CAyaStreamSQ::RemoveData(int iSize)
 /////////////////////////////////////////////////////////////////////////
 int	CAyaStreamSQ::MoveWritePos(int iSize)
 {
+	if (GetFreeSize() < iSize)
+		return 0;
+	else
+		m_iWritePos += iSize;
 
+	return iSize;
 }
 
 
@@ -190,7 +236,7 @@ char *CAyaStreamSQ::GetBufferPtr(void)
 /////////////////////////////////////////////////////////////////////////
 char *CAyaStreamSQ::GetReadBufferPtr(void)
 {
-	return &m_chpBuffer[m_iReadPos];S
+	return &m_chpBuffer[m_iReadPos];
 }
 
 /////////////////////////////////////////////////////////////////////////
@@ -199,7 +245,7 @@ char *CAyaStreamSQ::GetReadBufferPtr(void)
 // Parameters: 없음.
 // Return: (char *) 버퍼 포인터.
 /////////////////////////////////////////////////////////////////////////
-char CAyaStreamSQ::*GetWriteBufferPtr(void)
+char *CAyaStreamSQ::GetWriteBufferPtr(void)
 {
-
+	return &m_chpBuffer[m_iWritePos];
 }
