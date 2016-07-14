@@ -20,6 +20,8 @@ void main()
 
 	while(1)
 	{
+		int retval;
+
 		srand(time(NULL));
 		////////////////////////////////////////////////////
 		InputRandom = (rand() % 30) + 1;
@@ -27,25 +29,31 @@ void main()
 
 		for (int iCnt = 0; iCnt < InputRandom; iCnt++)
 		{
-			Input[iCnt] = str[PrevIndexInput + iCnt];
+			Input[iCnt] = str[PrevIndexInput++];
+			if (PrevIndexInput >= strlen(str))	PrevIndexInput -= strlen(str);
 		}
 		////////////////////////////////////////////////////
+		retval = StreamQ.Put(Input, InputRandom);
+		if (InputRandom != retval)
+		{
+			PrevIndexInput -= InputRandom - retval;
+			if (PrevIndexInput < 0)	PrevIndexInput += strlen(str);
+		}
 
-		PrevIndexInput = (PrevIndexInput + InputRandom) % strlen(str);
-		StreamQ.Put(Input, InputRandom);
 
 		////////////////////////////////////////////////////
 		OutputRandom = (rand() % 30) + 1;
 		output = new char[OutputRandom + 1];
 		////////////////////////////////////////////////////
 		
-		int retval = StreamQ.Get(output, OutputRandom);
+		retval = StreamQ.Get(output, OutputRandom);
+
 		output[retval] = '\0';
 
 		printf("%s", output);
 
 		delete[] Input;
 		delete[] output;
-		Sleep(800);
+		Sleep(80);
 	}
 }

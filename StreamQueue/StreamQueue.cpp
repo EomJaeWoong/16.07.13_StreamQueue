@@ -112,7 +112,7 @@ int	CAyaStreamSQ::Put(char *chpData, int iSize)
 {
 	if (GetFreeSize() < iSize)
 		iSize = GetFreeSize();
-	if (m_iWritePos < m_iReadPos)
+	if (GetNotBrokenPutSize() < iSize && m_iWritePos < m_iReadPos)
 		iSize = GetNotBrokenPutSize();
 
 	for (int iCnt = 0; iCnt < iSize; iCnt++)
@@ -134,7 +134,7 @@ int	CAyaStreamSQ::Get(char *chpDest, int iSize)
 {
 	if (GetUseSize() < iSize)
 		iSize = GetUseSize();
-	if (m_iWritePos < m_iReadPos)
+	if (GetNotBrokenGetSize() < iSize && m_iWritePos < m_iReadPos)
 		iSize = GetNotBrokenGetSize();
 
 	for (int iCnt = 0; iCnt < iSize; iCnt++)
