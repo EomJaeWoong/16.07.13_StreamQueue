@@ -1,11 +1,12 @@
-#include "StreamQueue.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <Windows.h>
 #include <time.h>
 
-CAyaStreamSQ StreamQ(200);
+#include "AyaStreamSQ.h"
+
+CAyaStreamSQ StreamQ;
 
 void main()
 {

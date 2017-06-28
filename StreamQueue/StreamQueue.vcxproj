@@ -78,10 +78,10 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="StreamQueue.h" />
+    <ClInclude Include="AyaStreamSQ.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="StreamQueue.cpp" />
+    <ClCompile Include="AyaStreamSQ.cpp" />
     <ClCompile Include="Test_main.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

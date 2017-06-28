@@ -15,15 +15,15 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="StreamQueue.h">
+    <ClInclude Include="AyaStreamSQ.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="StreamQueue.cpp">
+    <ClCompile Include="Test_main.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
-    <ClCompile Include="Test_main.cpp">
+    <ClCompile Include="AyaStreamSQ.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
   </ItemGroup>
